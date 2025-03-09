@@ -1,0 +1,50 @@
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266HTTPClient.h>
+
+const char* ssid = "powerhouse1";
+const char* password = "gnits@1997";
+const char* serverUrl = "http://192.168.209.4:5000/nodemcu/data"; // Update to your Flask server's IP and port
+
+const int bsize = 200; // Adjust buffer size to accommodate the JSON string length
+char buffer[bsize];
+
+void setup() {
+    Serial.begin(9600);
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Connecting to WiFi...");
+    }
+
+    Serial.println("Connected to WiFi");
+    Serial.println(WiFi.localIP());
+}
+
+void sendDataToServer() {
+    if (Serial.available() > 0) {
+        // Read the incoming serial data into the buffer
+        int bytecount = Serial.readBytesUntil('\n', buffer, bsize);
+
+        // Print the received JSON string
+        //Serial.println("Received JSON string:");
+        Serial.println(buffer);
+
+        // Send the data to the Flask server
+        // You can implement the HTTP POST request here
+        // Example:
+        WiFiClient client;
+        HTTPClient http;
+        if (http.begin(client, serverUrl)) {
+            http.addHeader("Content-Type", "application/json");
+            int httpResponseCode = http.POST(buffer);
+            http.end();
+        }
+    }
+}
+
+void loop() {
+    sendDataToServer();
+    delay(1000);
+}

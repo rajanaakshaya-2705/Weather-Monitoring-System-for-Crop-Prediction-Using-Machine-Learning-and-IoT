@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Type Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/previews/007/449/070/non_2x/agriculture-plant-seedling-growing-step-concept-with-mountain-and-sunrise-background-free-photo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: rgba(76, 175, 80, 0.8);
+            color: white;
+            padding: 20px 0;
+            margin: 0 0 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .logout-link {
+            display: block;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .logout-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crop Type Prediction</h1>
+    <button id="predictCropBtn" onclick="predictCropType()">Predict Crop Type</button>
+    <p id="prediction"></p>
+    <a class="logout-link" href="/logout">Logout</a>
+
+    <script>
+        async function predictCropType() {
+            const predictCropBtn = document.getElementById('predictCropBtn');
+            const predictionP = document.getElementById('prediction');
+            predictCropBtn.disabled = true;
+            predictionP.innerHTML = 'Predicting...';
+            
+            try {
+                const response = await fetch('/predict_crop_type');
+                const data = await response.json();
+
+                if (response.ok) {
+                    predictionP.innerText = 'Predicted Crop Type: ' + data.predicted_crop_type;
+                } else {
+                    predictionP.innerText = 'Error predicting crop type: ' + data.message;
+                }
+            } catch (error) {
+                predictionP.innerText = 'Error predicting crop type: ' + error.message;
+            } finally {
+                predictCropBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
